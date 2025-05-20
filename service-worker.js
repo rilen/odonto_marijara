@@ -1,0 +1,31 @@
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open('odonto-cache').then((cache) => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+        '/app.js',
+        '/contatos.js',
+        '/agendamento.js',
+        '/financeiro.js',
+        '/estoque.js',
+        '/relatorios.js',
+        '/odontograma.js',
+        '/notificacoes.js',
+        '/dashboard.js',
+        '/configuracoes.js',
+        '/anamnese.js',
+        '/treinamento.js',
+        '/suporte.js',
+      ]);
+    })
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});

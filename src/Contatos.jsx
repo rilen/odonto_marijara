@@ -1,5 +1,5 @@
 ```
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const Contatos = () => {
   const [contatos, setContatos] = useState([
@@ -8,35 +8,18 @@ const Contatos = () => {
   ]);
   const [novoContato, setNovoContato] = useState({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
   const [search, setSearch] = useState('');
-  const [editando, setEditando] = useState(null);
 
   const handleInputChange = (e) => {
     setNovoContato({ ...novoContato, [e.target.name]: e.target.value });
   };
 
-  const adicionarOuEditarContato = () => {
+  const adicionarContato = () => {
     if (!novoContato.nome || !novoContato.cpf || !novoContato.telefone) {
-      alert('Preencha todos os campos obrigatórios!');
+      alert('Preencha todos os campos!');
       return;
     }
-    if (editando) {
-      setContatos(contatos.map((c) => (c.id === editando.id ? { id: c.id, ...novoContato } : c)));
-      setEditando(null);
-    } else {
-      setContatos([...contatos, { id: contatos.length + 1, ...novoContato }]);
-    }
+    setContatos([...contatos, { id: contatos.length + 1, ...novoContato }]);
     setNovoContato({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
-  };
-
-  const editarContato = (contato) => {
-    setEditando(contato);
-    setNovoContato({ nome: contato.nome, cpf: contato.cpf, tipo: contato.tipo, telefone: contato.telefone });
-  };
-
-  const excluirContato = (id) => {
-    if (window.confirm('Excluir contato?')) {
-      setContatos(contatos.filter((c) => c.id !== id));
-    }
   };
 
   const filteredContatos = contatos.filter(
@@ -48,22 +31,20 @@ const Contatos = () => {
       <h1 className="text-2xl font-bold">Gestão de Contatos</h1>
       <div className="grid grid-cols-3 gap-4 mt-4">
         <div className="col-span-2 bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Contatos</h2>
           <input
             type="text"
             placeholder="Buscar por Nome ou CPF"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border p-2 w-full mt-2"
+            className="border p-2 w-full mb-4"
           />
-          <table className="w-full mt-4 border">
+          <table className="w-full border">
             <thead>
               <tr>
                 <th>Nome</th>
                 <th>CPF</th>
                 <th>Tipo</th>
                 <th>Telefone</th>
-                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -73,27 +54,13 @@ const Contatos = () => {
                   <td>{contato.cpf}</td>
                   <td>{contato.tipo}</td>
                   <td>{contato.telefone}</td>
-                  <td>
-                    <button
-                      onClick={() => editarContato(contato)}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => excluirContato(contato.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded"
-                    >
-                      Excluir
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl">{editando ? 'Editar Contato' : 'Novo Contato'}</h2>
+          <h2 className="text-xl">Novo Contato</h2>
           <input
             type="text"
             name="nome"
@@ -129,22 +96,11 @@ const Contatos = () => {
             className="border p-2 w-full mt-2"
           />
           <button
-            onClick={adicionarOuEditarContato}
+            onClick={adicionarContato}
             className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
           >
-            {editando ? 'Salvar' : 'Adicionar'}
+            Adicionar
           </button>
-          {editando && (
-            <button
-              onClick={() => {
-                setEditando(null);
-                setNovoContato({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
-              }}
-              className="bg-gray-500 text-white px-4 py-2 mt-2 rounded"
-            >
-              Cancelar
-            </button>
-          )}
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+```
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
@@ -41,7 +42,7 @@ const App = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        setUser({ id: data.id, email: data.email, role: data.role, modulos: data.modulos });
+        setUser({ _id: data.id, email: data.email, role: data.role, modulos: data.modulos });
         setLoginAttempts(0);
         setEmail('');
         setPassword('');
@@ -157,3 +158,4 @@ const App = () => {
 
 const root = createRoot(document.getElementById('root'));
 root.render(<App />);
+```

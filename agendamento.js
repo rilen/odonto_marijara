@@ -1,107 +1,85 @@
 import React, { useState } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
-const Contatos = () => {
-  const [contatos, setContatos] = useState([
-    { id: 1, nome: 'João Silva', tipo: 'Paciente', telefone: '11999999999', email: 'joao@email.com', odontograma: 'Link' },
-    { id: 2, nome: 'Maria Santos', tipo: 'Paciente', telefone: '11888888888', email: 'maria@email.com', odontograma: 'Link' },
+const Agendamento = () => {
+  const [events, setEvents] = useState([
+    { title: 'Consulta - João', start: '2025-05-21T10:00:00', end: '2025-05-21T11:00:00', dentista: 'Dr. Ana' },
   ]);
-  const [novoContato, setNovoContato] = useState({ nome: '', tipo: 'Paciente', telefone: '', email: '' });
-  const [busca, setBusca] = useState('');
+  const [newEvent, setNewEvent] = useState({ title: '', start: '', dentista: '' });
 
-  const handleInputChange = (e) => {
-    setNovoContato({ ...novoContato, [e.target.name]: e.target.value });
+  const handleDateClick = (arg) => {
+    setNewEvent({ ...newEvent, start: arg.dateStr });
   };
 
-  const adicionarContato = () => {
-    if (!novoContato.nome || !novoContato.telefone || !novoContato.email) {
+  const handleInputChange = (e) => {
+    setNewEvent({ ...newEvent, [e.target.name]: e.target.value });
+  };
+
+  const addEvent = () => {
+    if (!newEvent.title || !newEvent.start || !newEvent.dentista) {
       alert('Preencha todos os campos obrigatórios!');
       return;
     }
-    setContatos([...contatos, { id: contatos.length + 1, ...novoContato, odontograma: 'Link' }]);
-    setNovoContato({ nome: '', tipo: 'Paciente', telefone: '', email: '' });
+    setEvents([...events, { ...newEvent, end: new Date(new Date(newEvent.start).getTime() + 60*60*1000).toISOString() }]);
+    setNewEvent({ title: '', start: '', dentista: '' });
   };
-
-  const contatosFiltrados = contatos.filter(c => 
-    c.nome.toLowerCase().includes(busca.toLowerCase()) || c.telefone.includes(busca)
-  );
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <h1 className="text-2xl font-bold">Contatos</h1>
+      <h1 className="text-2xl font-bold">Agendamento de Consultas</h1>
       <div className="grid grid-cols-3 gap-4 mt-4">
         <div className="col-span-2 bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Lista de Contatos</h2>
-          <input
-            type="text"
-            placeholder="Buscar por nome ou CPF"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            className="border p-2 w-full mt-2"
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="timeGridWeek"
+            events={events}
+            dateClick={handleDateClick}
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            }}
+            slotMinTime="08:00:00"
+            slotMaxTime="18:00:00"
+            allDaySlot={false}
+            eventColor="#3b82f6"
           />
-          <table className="w-full mt-4 border">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Tipo</th>
-                <th>Telefone</th>
-                <th>E-mail</th>
-                <th>Odontograma</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contatosFiltrados.map((contato) => (
-                <tr key={contato.id}>
-                  <td>{contato.nome}</td>
-                  <td>{contato.tipo}</td>
-                  <td>{contato.telefone}</td>
-                  <td>{contato.email}</td>
-                  <td><a href="#" className="text-blue-500">{contato.odontograma}</a></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
         <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Novo Contato</h2>
+          <h2 className="text-xl">Novo Agendamento</h2>
           <input
             type="text"
-            name="nome"
-            placeholder="Nome"
-            value={novoContato.nome}
+            name="title"
+            placeholder="Nome do Paciente"
+            value={newEvent.title}
+            onChange={handleInputChange}
+            className="border p-2 w-full mt-2"
+          />
+          <input
+            type="datetime-local"
+            name="start"
+            value={newEvent.start}
             onChange={handleInputChange}
             className="border p-2 w-full mt-2"
           />
           <select
-            name="tipo"
-            value={novoContato.tipo}
+            name="dentista"
+            value={newEvent.dentista}
             onChange={handleInputChange}
             className="border p-2 w-full mt-2"
           >
-            <option value="Paciente">Paciente</option>
-            <option value="Fornecedor">Fornecedor</option>
-            <option value="Dentista">Dentista</option>
+            <option value="">Selecione Dentista</option>
+            <option value="Dr. Ana">Dr. Ana</option>
+            <option value="Dr. Carlos">Dr. Carlos</option>
           </select>
-          <input
-            type="text"
-            name="telefone"
-            placeholder="Telefone"
-            value={novoContato.telefone}
-            onChange={handleInputChange}
-            className="border p-2 w-full mt-2"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="E-mail"
-            value={novoContato.email}
-            onChange={handleInputChange}
-            className="border p-2 w-full mt-2"
-          />
           <button
-            onClick={adicionarContato}
+            onClick={addEvent}
             className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
           >
-            Adicionar
+            Agendar
           </button>
         </div>
       </div>
@@ -109,4 +87,4 @@ const Contatos = () => {
   );
 };
 
-export default Contatos;
+export default Agendamento;

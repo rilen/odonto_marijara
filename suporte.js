@@ -5,16 +5,32 @@ const Suporte = () => {
     { id: 1, assunto: 'Erro no agendamento', status: 'Aberto', data: '2025-05-20' },
   ]);
   const [novoTicket, setNovoTicket] = useState({ assunto: '', mensagem: '' });
+  const [faq, setFaq] = useState('');
 
   const handleInputChange = (e) => {
     setNovoTicket({ ...novoTicket, [e.target.name]: e.target.value });
   };
 
   const criarTicket = () => {
-    if (novoTicket.assunto && novoTicket.mensagem) {
-      setTickets([...tickets, { id: tickets.length + 1, ...novoTicket, status: 'Aberto', data: new Date().toISOString().split('T')[0] }]);
-      setNovoTicket({ assunto: '', mensagem: '' });
+    if (!novoTicket.assunto || !novoTicket.mensagem) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
     }
+    setTickets([...tickets, { id: tickets.length + 1, ...novoTicket, status: 'Aberto', data: new Date().toISOString().split('T')[0] }]);
+    setNovoTicket({ assunto: '', mensagem: '' });
+  };
+
+  const responderFaq = () => {
+    if (!faq) {
+      alert('Digite uma pergunta!');
+      return;
+    }
+    const respostas = {
+      'agendamento': 'Verifique o módulo Agendamento e selecione uma data válida.',
+      'erro': 'Tente limpar o cache ou contate o suporte técnico.'
+    };
+    const resposta = Object.keys(respostas).find(key => faq.toLowerCase().includes(key));
+    alert(resposta ? respostas[resposta] : 'Pergunta não encontrada. Crie um ticket.');
   };
 
   return (
@@ -64,6 +80,20 @@ const Suporte = () => {
             className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
           >
             Enviar Ticket
+          </button>
+          <h2 className="text-xl mt-4">FAQ</h2>
+          <input
+            type="text"
+            placeholder="Digite sua dúvida"
+            value={faq}
+            onChange={(e) => setFaq(e.target.value)}
+            className="border p-2 w-full mt-2"
+          />
+          <button
+            onClick={responderFaq}
+            className="bg-green-500 text-white px-4 py-2 mt-2 rounded"
+          >
+            Consultar FAQ
           </button>
         </div>
       </div>

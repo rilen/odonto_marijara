@@ -1,39 +1,43 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const User = require('../src/models/User');
-require('dotenv').config();
+   const bcrypt = require('bcryptjs');
+   require('dotenv').config();
 
-const initAdmin = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB conectado');
+   const User = require('../models/User');
 
-    const adminExists = await User.findOne({ email: 'admin@odonto.com' });
-    if (adminExists) {
-      console.log('Admin já existe:', adminExists.email);
-      return;
-    }
+   const initializeAdmin = async () => {
+     try {
+       await mongoose.connect(process.env.MONGO_URI, {
+         useNewUrlParser: true,
+         useUnifiedTopology: true,
+       });
+       console.log('MongoDB conectado');
 
-    const hashedPassword = await bcrypt.hash('admin123', 10);
-    const admin = await User.create({
-      email: 'admin@odonto.com',
-      password: hashedPassword,
-      role: 'admin',
-      modulos: [
-        'Dashboard', 'Contatos', 'Agendamento', 'Financeiro', 'Estoque', 'Relatorios',
-        'Odontograma', 'Notificacoes', 'Configuracoes', 'Anamnese', 'Treinamento',
-        'Suporte', 'Avaliacao', 'GestaoUsuarios',
-      ],
-    });
-    console.log('Admin criado:', admin.email);
-  } catch (err) {
-    console.error('Erro:', err.message);
-  } finally {
-    mongoose.connection.close();
-  }
-};
+       const adminEmail = 'admin@odonto.com';
+       const adminExists = await User.findOne({ email: adminEmail });
 
-initAdmin();
+       if (!adminExists) {
+         const hashedPassword = await bcrypt.hash('admin123', 10);
+         const adminUser = new User({
+           email: adminEmail,
+           password: hashedPassword,
+           role: 'admin',
+           modulos: [
+             'Dashboard', 'Contatos', 'Agendamento', 'Financeiro', 'Estoque', 'Relatorios',
+             'Odontograma', 'Notificacoes', 'Configuracoes', 'Anamnese', 'Treinamento',
+             'Suporte', 'Avaliacao', 'GestaoUsuarios'
+           ],
+         });
+         await adminUser.save();
+         console.log('Admin criado:', adminEmail);
+       } else {
+         console.log('Admin já existe:', adminEmail);
+       }
+
+       mongoose.connection.close();
+     } catch (error) {
+       console.error('Erro ao inicializar Admin:', error);
+       process.exit(1);
+     }
+   };
+
+   initializeAdmin();

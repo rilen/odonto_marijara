@@ -14,50 +14,115 @@
 
 \begin{document}
 
-% Defining title and document structure
 \title{\textbf{Sistema Web para Consultório Odontológico - Documentação}}
 \author{Clínica Odontológica - Marijara}
 \date{20 de Maio de 2025}
 \maketitle
 
 \section{Visão Geral}
-Este documento descreve o sistema web desenvolvido para consultórios odontológicos, com módulos para gestão de pacientes, agendamentos, financeiro, estoque, relatórios, odontograma, notificações, dashboard, configurações, anamnese, treinamento, suporte e avaliação de pacientes. O sistema é construído com tecnologias modernas (React, Node.js, MongoDB) e suporta operação offline via PWA.
+Este documento descreve o sistema web desenvolvido para consultórios odontológicos, com módulos para gestão de pacientes, agendamentos, financeiro, estoque, relatórios, odontograma, notificações, dashboard, configurações, anamnese, treinamento, suporte e avaliação de pacientes. O sistema é construído com React, Vite, e Tailwind CSS, com suporte offline via PWA.
 
 \section{Requisitos Técnicos}
 \begin{itemize}
     \item \textbf{Navegador}: Chrome, Firefox, ou Edge (versões recentes).
-    \item \textbf{Servidor Local}: Node.js (\texttt{npx serve}) ou Python (\texttt{http.server}).
-    \item \textbf{Hospedagem Recomendada}: AWS Elastic Beanstalk, MongoDB Atlas, Cloudinary.
-    \item \textbf{Dependências}: Incluídas via CDN (React, Chart.js, jsPDF, FullCalendar, QRCode.js, SignaturePad).
+    \item \textbf{Dependências}: Node.js 18+, npm.
+    \item \textbf{Hospedagem}: Vercel, AWS Elastic Beanstalk, MongoDB Atlas, Cloudinary.
 \end{itemize}
 
 \section{Módulos do Sistema}
 \subsection{Acesso}
 \begin{itemize}
     \item Gerenciamento de contas (admin, dentista, operador).
-    \item Autenticação com JWT, bloqueio após 5 tentativas de login.
-    \item Auditoria de logs para alterações críticas.
+    \item Bloqueio após 5 tentativas de login.
 \end{itemize}
 
 \subsection{Contatos}
 \begin{itemize}
-    \item Cadastro de pacientes, fornecedores, e dentistas.
-    \item Captura de fotos via webcam, histórico em planilha, odontograma vinculado.
+    \item Cadastro de pacientes, fornecedores, dentistas.
     \item Busca rápida por CPF ou nome.
 \end{itemize}
 
 \subsection{Agendamento}
 \begin{itemize}
-    \item Calendário interativo (FullCalendar) para consultas, raio-x, controles.
-    \item Filtros por dentista e status, lembretes automáticos via e-mail/WhatsApp.
-    \item Suporte a fusos horários configuráveis.
+    \item Calendário interativo (FullCalendar).
+    \item Lembretes via e-mail/WhatsApp.
 \end{itemize}
 
 \subsection{Financeiro}
 \begin{itemize}
-    \item Gestão de contas a pagar/receber, emissão de boletos (PagSeguro).
-    \item Relatórios de faturamento, inadimplência, fluxo de caixa.
-    \item Integração com agendamentos.
+    \item Contas a pagar/receber.
+    \item Relatórios de faturamento.
 \end{itemize}
 
-\subsection{Esto
+\subsection{Estoque}
+\begin{itemize}
+    \item Controle com QR codes.
+    \item Alertas de estoque baixo.
+\end{itemize}
+
+\subsection{Relatorios}
+\begin{itemize}
+    \item Relatórios de consultas, financeiro, estoque.
+    \item Exportação em PDF/CSV.
+\end{itemize}
+
+\subsection{Odontograma}
+\begin{itemize}
+    \item Interface SVG para 32 dentes.
+    \item Exportação em PDF.
+\end{itemize}
+
+\subsection{Notificacoes}
+\begin{itemize}
+    \item Lembretes por e-mail, WhatsApp, push.
+\end{itemize}
+
+\subsection{Dashboard}
+\begin{itemize}
+    \item KPIs: consultas, faturamento, satisfação.
+\end{itemize}
+
+\subsection{Configuracoes}
+\begin{itemize}
+    \item Personalização de tema, fuso horário, idioma.
+\end{itemize}
+
+\subsection{Anamnese}
+\begin{itemize}
+    \item Formulário com assinatura digital.
+    \item Upload de exames.
+\end{itemize}
+
+\subsection{Treinamento}
+\begin{itemize}
+    \item Tutoriais com gamificação.
+    \item Certificados em PDF.
+\end{itemize}
+
+\subsection{Suporte}
+\begin{itemize}
+    \item Chat e tickets.
+    \item FAQs com IA simulada.
+\end{itemize}
+
+\subsection{Avaliacao}
+\begin{itemize}
+    \item Avaliações pós-consulta.
+    \item Gráficos de satisfação.
+\end{itemize}
+
+\section{Instruções de Instalação}
+\begin{enumerate}
+    \item Clonar repositório: \texttt{git clone <url>}.
+    \item Instalar dependências: \texttt{npm install}.
+    \item Iniciar servidor local: \texttt{npm run dev}.
+    \item Deploy no Vercel: Vincular repositório e configurar como Vite.
+\end{enumerate}
+
+\section{Observações}
+\begin{itemize}
+    \item Para produção, configurar MongoDB Atlas, AWS S3, Cloudinary.
+    \item Testar PWA offline após primeiro carregamento.
+\end{itemize}
+
+\end{document}

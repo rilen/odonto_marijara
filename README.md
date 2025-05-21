@@ -60,25 +60,43 @@ O ZIP (odonto-system.zip) contém:
 * **Treinamento**: Adicionar suporte a vídeos interativos com pausas para perguntas.  
 * **Suporte**: Implementar chat ao vivo com WebSocket para suporte em tempo real.
 
-* Lista de Arquivos
-index.html: Ponto de entrada com dependências.
-app.js: Navegação e integração de módulos com lazy loading.
-contatos.js: Gestão de contatos com busca rápida.
-agendamento.js: Calendário interativo para consultas.
-financeiro.js: Controle de contas e relatórios financeiros.
-estoque.js: Gestão de estoque com QR codes.
-relatorios.js: Relatórios com filtros e exportação.
-odontograma.js: Interface SVG para dentes com exportação.
-notificacoes.js: Lembretes por e-mail/WhatsApp com push.
-dashboard.js: KPIs e widget de satisfação.
-configuracoes.js: Personalização e exportação JSON.
-anamnese.js: Formulário de saúde com assinatura.
-treinamento.js: Tutoriais e quizzes com gamificação.
-suporte.js: Chat e tickets com IA simulada.
-avaliacao.js: Avaliações pós-consulta com notificações.
-manifest.json: Configuração do PWA.
-service-worker.js: Cache para suporte offline.
-documentacao.tex: Documentação em LaTeX.
-icon.png: Ícone do PWA (crie um PNG 192x192 ou use placeholder).
+### Lista de Arquivos
 
+1.  index.html: Ponto de entrada com dependências.
+    
+2.  app.js: Navegação e integração de módulos com lazy loading.
+    
+3.  contatos.js: Gestão de contatos com busca rápida.
+    
+4.  agendamento.js: Calendário interativo para consultas.
+    
+5.  financeiro.js: Controle de contas e relatórios financeiros.
+    
+6.  estoque.js: Gestão de estoque com QR codes.
+    
+7.  relatorios.js: Relatórios com filtros e exportação.
+    
+8.  odontograma.js: Interface SVG para dentes com exportação.
+    
+9.  notificacoes.js: Lembretes por e-mail/WhatsApp com push.
+    
+10.  dashboard.js: KPIs e widget de satisfação.
+    
+11.  configuracoes.js: Personalização e exportação JSON.
+    
+12.  anamnese.js: Formulário de saúde com assinatura.
+    
+13.  treinamento.js: Tutoriais e quizzes com gamificação.
+    
+14.  suporte.js: Chat e tickets com IA simulada.
+    
+15.  avaliacao.js: Avaliações pós-consulta com notificações.
+    
+16.  manifest.json: Configuração do PWA.
+    
+17.  service-worker.js: Cache para suporte offline.
+    
+18.  documentacao.tex: Documentação em LaTeX.
+    
+19.  icon.png: Ícone do PWA (crie um PNG 192x192 ou use placeholder).
 

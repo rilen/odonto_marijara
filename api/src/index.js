@@ -1,3 +1,4 @@
+```
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -8,7 +9,7 @@ const usuariosRoutes = require('./routes/usuarios');
 dotenv.config();
 const app = express();
 
-app.use(cors);
+app.use(cors({ origin: process.env.CLIENT_URL || 'https://odonto-marijara.onrender.com' }));
 app.use(express.json());
 
 // Conectar ao MongoDB
@@ -33,32 +34,6 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/usuarios', usuariosRoutes);
 
-// Inicializar Admin padrão
-const User = require('./models/User');
-const bcrypt = require('bcryptjs');
-
-const initAdmin = async () => {
-  try {
-    const adminExists = await User.findOne({ email: 'admin@odonto.com' });
-    if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
-      await User.create({
-        email: 'admin@odonto.com',
-        password: hashedPassword,
-        role: 'admin',
-        modulos: [
-          'Dashboard', 'Contatos', 'Agendamento', 'Financeiro', 'Estoque', 'Relatorios',
-          'Odontograma', 'Notificacoes', 'Configuracoes', 'Anamnese', 'Treinamento',
-          'Suporte', 'Avaliacao', 'GestaoUsuarios',
-        ],
-      });
-      console.log('Admin padrão criado.');
-    }
-  } catch (err) {
-    console.error('Erro ao criar admin:', err.message);
-  }
-};
-initAdmin();
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+```

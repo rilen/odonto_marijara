@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import Contatos from './contatos.js';
-import Agendamento from './agendamento.js';
-import Financeiro from './financeiro.js';
-import Estoque from './estoque.js';
-import Relatorios from './relatorios.js';
-import Odontograma from './odontograma.js';
-import Notificacoes from './notificacoes.js';
-import Dashboard from './dashboard.js';
-import Configuracoes from './configuracoes.js';
-import Anamnese from './anamnese.js';
-import Treinamento from './treinamento.js';
-import Suporte from './suporte.js';
-import Avaliacao from './avaliacao.js';
+import React, { useState, lazy, Suspense } from 'react';
+const Contatos = lazy(() => import('./contatos.js'));
+const Agendamento = lazy(() => import('./agendamento.js'));
+const Financeiro = lazy(() => import('./financeiro.js'));
+const Estoque = lazy(() => import('./estoque.js'));
+const Relatorios = lazy(() => import('./relatorios.js'));
+const Odontograma = lazy(() => import('./odontograma.js'));
+const Notificacoes = lazy(() => import('./notificacoes.js'));
+const Dashboard = lazy(() => import('./dashboard.js'));
+const Configuracoes = lazy(() => import('./configuracoes.js'));
+const Anamnese = lazy(() => import('./anamnese.js'));
+const Treinamento = lazy(() => import('./treinamento.js'));
+const Suporte = lazy(() => import('./suporte.js'));
+const Avaliacao = lazy(() => import('./avaliacao.js'));
 
 const App = () => {
   const [modulo, setModulo] = useState('Dashboard');
@@ -31,6 +31,8 @@ const App = () => {
     setLoginAttempts(loginAttempts + 1);
     if (loginAttempts + 1 >= 5) {
       alert('Conta bloqueada após 5 tentativas! Notificação enviada.');
+    } else {
+      alert(`Tentativa ${loginAttempts + 1}/5 falhou. Tente novamente.`);
     }
   };
 
@@ -57,7 +59,7 @@ const App = () => {
     <div className="min-h-screen bg-gray-100">
       {!user ? (
         <div className="max-w-md mx-auto mt-8 p-4">
-          <h2 className="text-xl">Login</h2>
+          <h2 className="text-xl font-bold">Login</h2>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
             onClick={() => login('admin')}
@@ -70,7 +72,7 @@ const App = () => {
           >
             Simular Falha de Login
           </button>
-          {loginAttempts > 0 && <p>Tentativas: {loginAttempts}/5</p>}
+          {loginAttempts > 0 && <p className="text-red-500 mt-2">Tentativas: {loginAttempts}/5</p>}
         </div>
       ) : (
         <div>
@@ -83,7 +85,9 @@ const App = () => {
               ))}
             </ul>
           </nav>
-          {renderModulo()}
+          <Suspense fallback={<div className="text-center mt-8">Carregando...</div>}>
+            {renderModulo()}
+          </Suspense>
         </div>
       )}
     </div>

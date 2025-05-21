@@ -1,6 +1,6 @@
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open('odonto-cache').then((cache) => {
+    caches.open('odonto-cache-v2').then((cache) => {
       return cache.addAll([
         '/',
         '/index.html',
@@ -17,6 +17,8 @@ self.addEventListener('install', (event) => {
         '/anamnese.js',
         '/treinamento.js',
         '/suporte.js',
+        '/avaliacao.js',
+        '/manifest.json',
       ]);
     })
   );

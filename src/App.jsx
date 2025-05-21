@@ -1,17 +1,20 @@
 import React, { useState, lazy, Suspense } from 'react';
-const Contatos = lazy(() => import('./contatos.js'));
-const Agendamento = lazy(() => import('./agendamento.js'));
-const Financeiro = lazy(() => import('./financeiro.js'));
-const Estoque = lazy(() => import('./estoque.js'));
-const Relatorios = lazy(() => import('./relatorios.js'));
-const Odontograma = lazy(() => import('./odontograma.js'));
-const Notificacoes = lazy(() => import('./notificacoes.js'));
-const Dashboard = lazy(() => import('./dashboard.js'));
-const Configuracoes = lazy(() => import('./configuracoes.js'));
-const Anamnese = lazy(() => import('./anamnese.js'));
-const Treinamento = lazy(() => import('./treinamento.js'));
-const Suporte = lazy(() => import('./suporte.js'));
-const Avaliacao = lazy(() => import('./avaliacao.js'));
+import { createRoot } from 'react-dom/client';
+import './index.css';
+
+const Contatos = lazy(() => import('./Contatos.jsx'));
+const Agendamento = lazy(() => import('./Agendamento.jsx'));
+const Financeiro = lazy(() => import('./Financeiro.jsx'));
+const Estoque = lazy(() => import('./Estoque.jsx'));
+const Relatorios = lazy(() => import('./Relatorios.jsx'));
+const Odontograma = lazy(() => import('./Odontograma.jsx'));
+const Notificacoes = lazy(() => import('./Notificacoes.jsx'));
+const Dashboard = lazy(() => import('./Dashboard.jsx'));
+const Configuracoes = lazy(() => import('./Configuracoes.jsx'));
+const Anamnese = lazy(() => import('./Anamnese.jsx'));
+const Treinamento = lazy(() => import('./Treinamento.jsx'));
+const Suporte = lazy(() => import('./Suporte.jsx'));
+const Avaliacao = lazy(() => import('./Avaliacao.jsx'));
 
 const App = () => {
   const [modulo, setModulo] = useState('Dashboard');
@@ -94,4 +97,5 @@ const App = () => {
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);

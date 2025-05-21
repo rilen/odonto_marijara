@@ -1,34 +1,15 @@
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open('odonto-cache-v3').then((cache) => {
-      return cache.addAll([
-        '/',
-        '/index.html',
-        '/app.js',
-        '/contatos.js',
-        '/agendamento.js',
-        '/financeiro.js',
-        '/estoque.js',
-        '/relatorios.js',
-        '/odontograma.js',
-        '/notificacoes.js',
-        '/dashboard.js',
-        '/configuracoes.js',
-        '/anamnese.js',
-        '/treinamento.js',
-        '/suporte.js',
-        '/avaliacao.js',
-        '/manifest.json',
-        '/documentacao.tex',
-      ]);
-    })
-  );
-});
-
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
-});
+{
+  "name": "Sistema Odontológico",
+  "short_name": "OdontoApp",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
+import { lazy, Suspense } from 'react';
 
 const Contatos = lazy(() => import('./Contatos.jsx'));
 const Agendamento = lazy(() => import('./Agendamento.jsx'));
@@ -23,49 +24,44 @@ const App = () => {
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  // Inicializar usuários no localStorage (simulação de banco de dados)
-  useEffect(() => {
-    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [
-      {
-        id: 1,
-        email: 'admin@odonto.com',
-        senha: 'admin123',
-        role: 'admin',
-        modulos: ['Dashboard', 'Contatos', 'Agendamento', 'Financeiro', 'Estoque', 'Relatorios', 'Odontograma', 'Notificacoes', 'Configuracoes', 'Anamnese', 'Treinamento', 'Suporte', 'Avaliacao', 'GestaoUsuarios'],
-      },
-    ];
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-  }, []);
-
-  const login = (e) => {
+  const login = async (e) => {
     e.preventDefault();
     if (loginAttempts >= 5) {
       alert('Conta bloqueada! Contate o suporte.');
       return;
     }
 
-    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    const usuario = usuarios.find((u) => u.email === email && u.senha === password);
-
-    if (usuario) {
-      setUser({ id: usuario.id, email: usuario.email, role: usuario.role, modulos: usuario.modulos });
-      setLoginAttempts(0);
-      setEmail('');
-      setPassword('');
-    } else {
-      setLoginAttempts(loginAttempts + 1);
-      if (loginAttempts + 1 >= 5) {
-        alert('Conta bloqueada após 5 tentativas! Notificação enviada.');
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUser({ id: data.id, email: data.email, role: data.role, modulos: data.modulos });
+        setLoginAttempts(0);
+        setEmail('');
+        setPassword('');
+        setError('');
       } else {
-        alert(`Tentativa ${loginAttempts + 1}/5 falhou. Tente novamente.`);
+        setLoginAttempts(loginAttempts + 1);
+        setError(data.message || 'E-mail ou senha inválidos.');
+        if (loginAttempts + 1 >= 5) {
+          alert('Conta bloqueada após 5 tentativas! Notificação enviada.');
+        }
       }
+    } catch (err) {
+      setError('Erro ao conectar com o servidor.');
     }
   };
 
   const logout = () => {
     setUser(null);
     setModulo('Dashboard');
+    setLoginAttempts(0);
   };
 
   const renderModulo = () => {
@@ -119,6 +115,7 @@ const App = () => {
             >
               Entrar
             </button>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
             {loginAttempts > 0 && <p className="text-red-500 mt-2">Tentativas: {loginAttempts}/5</p>}
           </form>
         </div>

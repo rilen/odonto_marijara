@@ -1,90 +1,155 @@
-import React, { useState } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+```
+import React, { useState, useEffect } from 'react';
 
-const Agendamento = () => {
-  const [events, setEvents] = useState([
-    { title: 'Consulta - João', start: '2025-05-21T10:00:00', end: '2025-05-21T11:00:00', dentista: 'Dr. Ana' },
+const Contatos = () => {
+  const [contatos, setContatos] = useState([
+    { id: 1, nome: 'João Silva', cpf: '123.456.789-00', tipo: 'Paciente', telefone: '(11) 99999-0000' },
+    { id: 2, nome: 'Dr. Ana', cpf: '987.654.321-00', tipo: 'Dentista', telefone: '(11) 98888-1111' },
   ]);
-  const [newEvent, setNewEvent] = useState({ title: '', start: '', dentista: '' });
-
-  const handleDateClick = (arg) => {
-    setNewEvent({ ...newEvent, start: arg.dateStr });
-  };
+  const [novoContato, setNovoContato] = useState({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
+  const [search, setSearch] = useState('');
+  const [editando, setEditando] = useState(null);
 
   const handleInputChange = (e) => {
-    setNewEvent({ ...newEvent, [e.target.name]: e.target.value });
+    setNovoContato({ ...novoContato, [e.target.name]: e.target.value });
   };
 
-  const addEvent = () => {
-    if (!newEvent.title || !newEvent.start || !newEvent.dentista) {
+  const adicionarOuEditarContato = () => {
+    if (!novoContato.nome || !novoContato.cpf || !novoContato.telefone) {
       alert('Preencha todos os campos obrigatórios!');
       return;
     }
-    setEvents([...events, { ...newEvent, end: new Date(new Date(newEvent.start).getTime() + 60*60*1000).toISOString() }]);
-    setNewEvent({ title: '', start: '', dentista: '' });
+    if (editando) {
+      setContatos(contatos.map((c) => (c.id === editando.id ? { id: c.id, ...novoContato } : c)));
+      setEditando(null);
+    } else {
+      setContatos([...contatos, { id: contatos.length + 1, ...novoContato }]);
+    }
+    setNovoContato({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
   };
+
+  const editarContato = (contato) => {
+    setEditando(contato);
+    setNovoContato({ nome: contato.nome, cpf: contato.cpf, tipo: contato.tipo, telefone: contato.telefone });
+  };
+
+  const excluirContato = (id) => {
+    if (window.confirm('Excluir contato?')) {
+      setContatos(contatos.filter((c) => c.id !== id));
+    }
+  };
+
+  const filteredContatos = contatos.filter(
+    (c) => c.nome.toLowerCase().includes(search.toLowerCase()) || c.cpf.includes(search)
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <h1 className="text-2xl font-bold">Agendamento de Consultas</h1>
+      <h1 className="text-2xl font-bold">Gestão de Contatos</h1>
       <div className="grid grid-cols-3 gap-4 mt-4">
         <div className="col-span-2 bg-white p-4 rounded shadow">
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="timeGridWeek"
-            events={events}
-            dateClick={handleDateClick}
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            }}
-            slotMinTime="08:00:00"
-            slotMaxTime="18:00:00"
-            allDaySlot={false}
-            eventColor="#3b82f6"
-          />
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Novo Agendamento</h2>
+          <h2 className="text-xl">Contatos</h2>
           <input
             type="text"
-            name="title"
-            placeholder="Nome do Paciente"
-            value={newEvent.title}
+            placeholder="Buscar por Nome ou CPF"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border p-2 w-full mt-2"
+          />
+          <table className="w-full mt-4 border">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Tipo</th>
+                <th>Telefone</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredContatos.map((contato) => (
+                <tr key={contato.id}>
+                  <td>{contato.nome}</td>
+                  <td>{contato.cpf}</td>
+                  <td>{contato.tipo}</td>
+                  <td>{contato.telefone}</td>
+                  <td>
+                    <button
+                      onClick={() => editarContato(contato)}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => excluirContato(contato.id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded"
+                    >
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="text-xl">{editando ? 'Editar Contato' : 'Novo Contato'}</h2>
+          <input
+            type="text"
+            name="nome"
+            placeholder="Nome"
+            value={novoContato.nome}
             onChange={handleInputChange}
             className="border p-2 w-full mt-2"
           />
           <input
-            type="datetime-local"
-            name="start"
-            value={newEvent.start}
+            type="text"
+            name="cpf"
+            placeholder="CPF"
+            value={novoContato.cpf}
             onChange={handleInputChange}
             className="border p-2 w-full mt-2"
           />
           <select
-            name="dentista"
-            value={newEvent.dentista}
+            name="tipo"
+            value={novoContato.tipo}
             onChange={handleInputChange}
             className="border p-2 w-full mt-2"
           >
-            <option value="">Selecione Dentista</option>
-            <option value="Dr. Ana">Dr. Ana</option>
-            <option value="Dr. Carlos">Dr. Carlos</option>
+            <option value="Paciente">Paciente</option>
+            <option value="Dentista">Dentista</option>
+            <option value="Fornecedor">Fornecedor</option>
           </select>
+          <input
+            type="text"
+            name="telefone"
+            placeholder="Telefone"
+            value={novoContato.telefone}
+            onChange={handleInputChange}
+            className="border p-2 w-full mt-2"
+          />
           <button
-            onClick={addEvent}
+            onClick={adicionarOuEditarContato}
             className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
           >
-            Agendar
+            {editando ? 'Salvar' : 'Adicionar'}
           </button>
+          {editando && (
+            <button
+              onClick={() => {
+                setEditando(null);
+                setNovoContato({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
+              }}
+              className="bg-gray-500 text-white px-4 py-2 mt-2 rounded"
+            >
+              Cancelar
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default Agendamento;
+export default Contatos;
+```

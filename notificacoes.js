@@ -12,10 +12,12 @@ const Notificacoes = () => {
   };
 
   const enviarNotificacao = () => {
-    if (novaNotificacao.destinatario && novaNotificacao.mensagem) {
-      setNotificacoes([...notificacoes, { id: notificacoes.length + 1, ...novaNotificacao, data: new Date().toISOString().split('T')[0] }]);
-      setNovaNotificacao({ tipo: 'E-mail', destinatario: '', mensagem: '', status: 'Pendente' });
+    if (!novaNotificacao.destinatario || !novaNotificacao.mensagem) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
     }
+    setNotificacoes([...notificacoes, { id: notificacoes.length + 1, ...novaNotificacao, data: new Date().toISOString().split('T')[0] }]);
+    setNovaNotificacao({ tipo: 'E-mail', destinatario: '', mensagem: '', status: 'Pendente' });
   };
 
   return (
@@ -57,6 +59,7 @@ const Notificacoes = () => {
           >
             <option value="E-mail">E-mail</option>
             <option value="WhatsApp">WhatsApp</option>
+            <option value="Push">Push</option>
           </select>
           <input
             type="text"

@@ -60,4 +60,25 @@ O ZIP (odonto-system.zip) contém:
 * **Treinamento**: Adicionar suporte a vídeos interativos com pausas para perguntas.  
 * **Suporte**: Implementar chat ao vivo com WebSocket para suporte em tempo real.
 
+* Lista de Arquivos
+index.html: Ponto de entrada com dependências.
+app.js: Navegação e integração de módulos com lazy loading.
+contatos.js: Gestão de contatos com busca rápida.
+agendamento.js: Calendário interativo para consultas.
+financeiro.js: Controle de contas e relatórios financeiros.
+estoque.js: Gestão de estoque com QR codes.
+relatorios.js: Relatórios com filtros e exportação.
+odontograma.js: Interface SVG para dentes com exportação.
+notificacoes.js: Lembretes por e-mail/WhatsApp com push.
+dashboard.js: KPIs e widget de satisfação.
+configuracoes.js: Personalização e exportação JSON.
+anamnese.js: Formulário de saúde com assinatura.
+treinamento.js: Tutoriais e quizzes com gamificação.
+suporte.js: Chat e tickets com IA simulada.
+avaliacao.js: Avaliações pós-consulta com notificações.
+manifest.json: Configuração do PWA.
+service-worker.js: Cache para suporte offline.
+documentacao.tex: Documentação em LaTeX.
+icon.png: Ícone do PWA (crie um PNG 192x192 ou use placeholder).
+
 

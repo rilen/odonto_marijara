@@ -9,12 +9,26 @@ const GestaoUsuarios = () => {
   });
   const [editando, setEditando] = useState(null);
   const [permissoes, setPermissoes] = useState([]);
+  const [error, setError] = useState('');
 
-  // Carregar usuários do localStorage
+  // Carregar usuários
   useEffect(() => {
-    const storedUsuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    setUsuarios(storedUsuarios);
+    fetchUsuarios();
   }, []);
+
+  const fetchUsuarios = async () => {
+    try {
+      const response = await fetch('/api/usuarios');
+      const data = await response.json();
+      if (response.ok) {
+        setUsuarios(data);
+      } else {
+        setError(data.message || 'Erro ao carregar usuários.');
+      }
+    } catch (err) {
+      setError('Erro ao conectar com o servidor.');
+    }
+  };
 
   // Módulos disponíveis por perfil
   const modulosPorPerfil = {
@@ -23,7 +37,7 @@ const GestaoUsuarios = () => {
       'Odontograma', 'Notificacoes', 'Configuracoes', 'Anamnese', 'Treinamento',
       'Suporte', 'Avaliacao', 'GestaoUsuarios',
     ],
-    operador: ['Agendamento'],
+    operador: ['Agendamento', 'Financeiro', 'Relatorios'],
     dentista: ['Contatos', 'Anamnese', 'Odontograma', 'Relatorios', 'Avaliacao'],
   };
 
@@ -39,56 +53,64 @@ const GestaoUsuarios = () => {
     }
   };
 
-  const cadastrarOuEditarUsuario = (e) => {
+  const cadastrarOuEditarUsuario = async (e) => {
     e.preventDefault();
     if (!novoUsuario.email || !novoUsuario.senha) {
       alert('Preencha e-mail e senha!');
       return;
     }
 
-    const novosUsuarios = [...usuarios];
-    if (editando) {
-      // Editar usuário existente
-      const index = novosUsuarios.findIndex((u) => u.id === editando.id);
-      novosUsuarios[index] = {
-        ...editando,
-        email: novoUsuario.email,
-        senha: novoUsuario.senha,
-        role: novoUsuario.role,
-        modulos: permissoes.length > 0 ? permissoes : modulosPorPerfil[novoUsuario.role],
-      };
-    } else {
-      // Cadastrar novo usuário
-      const novoId = usuarios.length > 0 ? Math.max(...usuarios.map((u) => u.id)) + 1 : 1;
-      novosUsuarios.push({
-        id: novoId,
-        email: novoUsuario.email,
-        senha: novoUsuario.senha,
-        role: novoUsuario.role,
-        modulos: permissoes.length > 0 ? permissoes : modulosPorPerfil[novoUsuario.role],
-      });
-    }
+    const usuarioData = {
+      email: novoUsuario.email,
+      senha: novoUsuario.senha,
+      role: novoUsuario.role,
+      modulos: permissoes.length > 0 ? permissoes : modulosPorPerfil[novoUsuario.role],
+    };
 
-    localStorage.setItem('usuarios', JSON.stringify(novosUsuarios));
-    setUsuarios(novosUsuarios);
-    setNovoUsuario({ email: '', senha: '', role: 'operador' });
-    setPermissoes([]);
-    setEditando(null);
-    alert(editando ? 'Usuário atualizado!' : 'Usuário cadastrado!');
+    try {
+      const url = editando ? `/api/usuarios/${editando.id}` : '/api/usuarios';
+      const method = editando ? 'PUT' : 'POST';
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(usuarioData),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        fetchUsuarios();
+        setNovoUsuario({ email: '', senha: '', role: 'operador' });
+        setPermissoes([]);
+        setEditando(null);
+        setError('');
+        alert(editando ? 'Usuário atualizado!' : 'Usuário cadastrado!');
+      } else {
+        setError(data.message || 'Erro ao salvar usuário.');
+      }
+    } catch (err) {
+      setError('Erro ao conectar com o servidor.');
+    }
   };
 
   const editarUsuario = (usuario) => {
     setEditando(usuario);
-    setNovoUsuario({ email: usuario.email, senha: usuario.senha, role: usuario.role });
+    setNovoUsuario({ email: usuario.email, senha: '', role: usuario.role });
     setPermissoes(usuario.modulos);
   };
 
-  const excluirUsuario = (id) => {
-    if (confirm('Excluir usuário?')) {
-      const novosUsuarios = usuarios.filter((u) => u.id !== id);
-      localStorage.setItem('usuarios', JSON.stringify(novosUsuarios));
-      setUsuarios(novosUsuarios);
-      alert('Usuário excluído!');
+  const excluirUsuario = async (id) => {
+    if (window.confirm('Excluir usuário?')) {
+      try {
+        const response = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          fetchUsuarios();
+          alert('Usuário excluído!');
+        } else {
+          const data = await response.json();
+          setError(data.message || 'Erro ao excluir usuário.');
+        }
+      } catch (err) {
+        setError('Erro ao conectar com o servidor.');
+      }
     }
   };
 
@@ -159,6 +181,7 @@ const GestaoUsuarios = () => {
               Cancelar
             </button>
           )}
+          {error && <p className="text-red-500 mt-2">{error}</p>}
         </form>
       </div>
       <div className="bg-white p-4 rounded shadow mt-4">

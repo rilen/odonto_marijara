@@ -22,6 +22,22 @@ const Configuracoes = () => {
     a.click();
   };
 
+  const importarConfig = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target.result);
+        setConfig(json);
+        alert('Configurações importadas com sucesso!');
+      } catch {
+        alert('Erro ao importar configurações!');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <h1 className="text-2xl font-bold">Configurações</h1>
@@ -64,10 +80,16 @@ const Configuracoes = () => {
         </select>
         <button
           onClick={exportarConfig}
-          className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
+          className="bg-blue-500 text-white px-4 py-2 mt-4 rounded mr-2"
         >
           Exportar Configurações
         </button>
+        <input
+          type="file"
+          accept=".json"
+          onChange={importarConfig}
+          className="border p-2 w-full mt-2"
+        />
       </div>
     </div>
   );

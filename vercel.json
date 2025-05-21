@@ -9,8 +9,3 @@
     { "src": "/(.*)", "dest": "/dist/$1" }
   ]
 }
-   {
-     "git": {
-       "deploymentEnabled": false
-     }
-   }

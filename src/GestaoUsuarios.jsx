@@ -22,11 +22,12 @@ const GestaoUsuarios = () => {
       const data = await response.json();
       if (response.ok) {
         setUsuarios(data);
+        setError('');
       } else {
         setError(data.message || 'Erro ao carregar usuários.');
       }
     } catch (err) {
-      setError('Erro ao conectar com o servidor.');
+      setError('Erro ao conectar com o servidor. Verifique a conexão com o banco de dados.');
     }
   };
 
@@ -87,7 +88,7 @@ const GestaoUsuarios = () => {
         setError(data.message || 'Erro ao salvar usuário.');
       }
     } catch (err) {
-      setError('Erro ao conectar com o servidor.');
+      setError('Erro ao conectar com o servidor. Verifique a conexão com o banco de dados.');
     }
   };
 
@@ -103,13 +104,14 @@ const GestaoUsuarios = () => {
         const response = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
         if (response.ok) {
           fetchUsuarios();
+          setError('');
           alert('Usuário excluído!');
         } else {
           const data = await response.json();
           setError(data.message || 'Erro ao excluir usuário.');
         }
       } catch (err) {
-        setError('Erro ao conectar com o servidor.');
+        setError('Erro ao conectar com o servidor. Verifique a conexão com o banco de dados.');
       }
     }
   };

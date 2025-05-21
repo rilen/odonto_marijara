@@ -3,13 +3,13 @@ import jsPDF from 'jspdf';
 
 const Odontograma = () => {
   const [dentes, setDentes] = useState(
-    Array(32).fill().map((_, i) => ({ id: i + 1, condicao: 'Saudável', notas: '' }))
+    Array(32).fill().map((_, i) => ({ id: i + 1, condicao: 'Saudável', notas: '', tratamentoPlanejado: '' }))
   );
   const [selectedDente, setSelectedDente] = useState(null);
 
   const atualizarCondicao = (id, condicao) => {
     setDentes(dentes.map(dente => 
-      dente.id === id ? { ...dente, condicao, notas: dente.notas || '' } : dente
+      dente.id === id ? { ...dente, condicao } : dente
     ));
   };
 
@@ -19,11 +19,17 @@ const Odontograma = () => {
     ));
   };
 
+  const atualizarTratamento = (id, tratamentoPlanejado) => {
+    setDentes(dentes.map(dente => 
+      dente.id === id ? { ...dente, tratamentoPlanejado } : dente
+    ));
+  };
+
   const exportarPDF = () => {
     const doc = new jsPDF();
     doc.text('Odontograma do Paciente', 10, 10);
     dentes.forEach((dente, index) => {
-      doc.text(`Dente ${dente.id}: ${dente.condicao} - ${dente.notas || 'Sem notas'}`, 10, 20 + index * 10);
+      doc.text(`Dente ${dente.id}: ${dente.condicao} - ${dente.notas || 'Sem notas'} - Tratamento: ${dente.tratamentoPlanejado || 'Nenhum'}`, 10, 20 + index * 10);
     });
     doc.save('odontograma.pdf');
   };
@@ -74,6 +80,13 @@ const Odontograma = () => {
                 value={dentes.find(d => d.id === selectedDente).notas}
                 onChange={(e) => atualizarNotas(selectedDente, e.target.value)}
                 placeholder="Notas"
+                className="border p-2 w-full mt-2"
+              />
+              <input
+                type="text"
+                value={dentes.find(d => d.id === selectedDente).tratamentoPlanejado}
+                onChange={(e) => atualizarTratamento(selectedDente, e.target.value)}
+                placeholder="Tratamento Planejado"
                 className="border p-2 w-full mt-2"
               />
             </>

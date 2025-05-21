@@ -8,18 +8,35 @@ const Contatos = () => {
   ]);
   const [novoContato, setNovoContato] = useState({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
   const [search, setSearch] = useState('');
+  const [editando, setEditando] = useState(null);
 
   const handleInputChange = (e) => {
     setNovoContato({ ...novoContato, [e.target.name]: e.target.value });
   };
 
-  const adicionarContato = () => {
+  const adicionarOuEditarContato = () => {
     if (!novoContato.nome || !novoContato.cpf || !novoContato.telefone) {
       alert('Preencha todos os campos!');
       return;
     }
-    setContatos([...contatos, { id: contatos.length + 1, ...novoContato }]);
+    if (editando) {
+      setContatos(contatos.map((c) => (c.id === editando.id ? { id: c.id, ...novoContato } : c)));
+      setEditando(null);
+    } else {
+      setContatos([...contatos, { id: contatos.length + 1, ...novoContato }]);
+    }
     setNovoContato({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
+  };
+
+  const editarContato = (contato) => {
+    setEditando(contato);
+    setNovoContato({ nome: contato.nome, cpf: contato.cpf, tipo: contato.tipo, telefone: contato.telefone });
+  };
+
+  const excluirContato = (id) => {
+    if (window.confirm('Excluir contato?')) {
+      setContatos(contatos.filter((c) => c.id !== id));
+    }
   };
 
   const filteredContatos = contatos.filter(
@@ -45,6 +62,7 @@ const Contatos = () => {
                 <th>CPF</th>
                 <th>Tipo</th>
                 <th>Telefone</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -54,13 +72,27 @@ const Contatos = () => {
                   <td>{contato.cpf}</td>
                   <td>{contato.tipo}</td>
                   <td>{contato.telefone}</td>
+                  <td>
+                    <button
+                      onClick={() => editarContato(contato)}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => excluirContato(contato.id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded"
+                    >
+                      Excluir
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Novo Contato</h2>
+          <h2 className="text-xl">{editando ? 'Editar Contato' : 'Novo Contato'}</h2>
           <input
             type="text"
             name="nome"
@@ -96,11 +128,22 @@ const Contatos = () => {
             className="border p-2 w-full mt-2"
           />
           <button
-            onClick={adicionarContato}
+            onClick={adicionarOuEditarContato}
             className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
           >
-            Adicionar
+            {editando ? 'Salvar' : 'Adicionar'}
           </button>
+          {editando && (
+            <button
+              onClick={() => {
+                setEditando(null);
+                setNovoContato({ nome: '', cpf: '', tipo: 'Paciente', telefone: '' });
+              }}
+              className="bg-gray-500 text-white px-4 py-2 mt-2 rounded"
+            >
+              Cancelar
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ const Dashboard = () => {
     faturamentoMes: 15000,
     estoqueBaixo: 2,
     fluxoCaixa: 10000,
+    satisfacaoMedia: 4.5,
   });
   const [alertas, setAlertas] = useState([
     { id: 1, mensagem: 'Consulta com João em 30 min', data: '2025-05-20 10:00' },
@@ -47,8 +48,8 @@ const Dashboard = () => {
           <p className="text-2xl">{kpis.estoqueBaixo}</p>
         </div>
         <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-lg">Fluxo de Caixa</h2>
-          <p className="text-2xl">R${kpis.fluxoCaixa}</p>
+          <h2 className="text-lg">Satisfação Média</h2>
+          <p className="text-2xl">{kpis.satisfacaoMedia}/5</p>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4 mt-4">

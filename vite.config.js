@@ -15,4 +15,3 @@ export default defineConfig({
     include: ['@fullcalendar/core', '@fullcalendar/timegrid', '@fullcalendar/daygrid', '@fullcalendar/interaction', '@fullcalendar/react'],
   },
 });
-```

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Chart from 'chart.js/auto';
 
 const Financeiro = () => {
   const [transacoes, setTransacoes] = useState([
@@ -13,10 +12,16 @@ const Financeiro = () => {
   };
 
   const adicionarTransacao = () => {
-    if (novaTransacao.valor && novaTransacao.paciente && novaTransacao.data) {
-      setTransacoes([...transacoes, { id: transacoes.length + 1, ...novaTransacao }]);
-      setNovaTransacao({ tipo: 'Receber', valor: '', paciente: '', status: 'Pendente', data: '' });
+    if (!novaTransacao.valor || !novaTransacao.paciente || !novaTransacao.data) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
     }
+    if (novaTransacao.valor <= 0) {
+      alert('O valor deve ser maior que zero!');
+      return;
+    }
+    setTransacoes([...transacoes, { id: transacoes.length + 1, ...novaTransacao }]);
+    setNovaTransacao({ tipo: 'Receber', valor: '', paciente: '', status: 'Pendente', data: '' });
   };
 
   return (

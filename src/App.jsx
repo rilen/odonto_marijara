@@ -54,7 +54,7 @@ const App = () => {
         }
       }
     } catch (err) {
-      setError('Erro ao conectar com o servidor.');
+      setError('Erro ao conectar com o servidor. Verifique a conexão com o banco de dados.');
     }
   };
 

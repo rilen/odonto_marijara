@@ -1,3 +1,4 @@
+```
 import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 
@@ -133,3 +134,4 @@ const Estoque = () => {
 };
 
 export default Estoque;
+```

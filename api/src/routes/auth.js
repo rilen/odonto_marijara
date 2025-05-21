@@ -1,3 +1,4 @@
+```
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
@@ -21,3 +22,4 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+```

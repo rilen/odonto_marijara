@@ -1,3 +1,4 @@
+```
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
@@ -57,3 +58,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+```

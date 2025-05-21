@@ -1,3 +1,4 @@
+```
 import React, { useState } from 'react';
 
 const Financeiro = () => {
@@ -109,3 +110,4 @@ const Financeiro = () => {
 };
 
 export default Financeiro;
+```

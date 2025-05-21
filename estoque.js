@@ -1,26 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import QRCode from 'qrcode';
 
 const Estoque = () => {
   const [itens, setItens] = useState([
-    { id: 1, nome: 'Resina Composta', quantidade: 50, minimo: 10, categoria: 'Consumível' },
-    { id: 2, nome: 'Luvas Descartáveis', quantidade: 200, minimo: 50, categoria: 'Consumível' },
+    { id: 1, nome: 'Resina Composta', quantidade: 50, minimo: 10, categoria: 'Consumível', qrCode: '' },
+    { id: 2, nome: 'Luvas Descartáveis', quantidade: 200, minimo: 50, categoria: 'Consumível', qrCode: '' },
   ]);
   const [novoItem, setNovoItem] = useState({ nome: '', quantidade: '', minimo: '', categoria: 'Consumível' });
+
+  useEffect(() => {
+    itens.forEach(item => {
+      QRCode.toDataURL(`Item: ${item.nome}, ID: ${item.id}`, (err, url) => {
+        if (!err) {
+          setItens(prev => prev.map(i => i.id === item.id ? { ...i, qrCode: url } : i));
+        }
+      });
+    });
+  }, []);
 
   const handleInputChange = (e) => {
     setNovoItem({ ...novoItem, [e.target.name]: e.target.value });
   };
 
   const adicionarItem = () => {
-    if (novoItem.nome && novoItem.quantidade && novoItem.minimo) {
-      setItens([...itens, { id: itens.length + 1, ...novoItem }]);
-      setNovoItem({ nome: '', quantidade: '', minimo: '', categoria: 'Consumível' });
+    if (!novoItem.nome || !novoItem.quantidade || !novoItem.minimo) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
     }
+    if (novoItem.quantidade < 0 || novoItem.minimo < 0) {
+      alert('Quantidade e mínimo devem ser não negativos!');
+      return;
+    }
+    setItens([...itens, { id: itens.length + 1, ...novoItem, qrCode: '' }]);
+    setNovoItem({ nome: '', quantidade: '', minimo: '', categoria: 'Consumível' });
   };
 
   const atualizarQuantidade = (id, delta) => {
     setItens(itens.map(item => 
-      item.id === id ? { ...item, quantidade: Number(item.quantidade) + delta } : item
+      item.id === id ? { ...item, quantidade: Math.max(0, Number(item.quantidade) + delta) } : item
     ));
   };
 
@@ -37,6 +54,7 @@ const Estoque = () => {
                 <th>Quantidade</th>
                 <th>Mínimo</th>
                 <th>Categoria</th>
+                <th>QR Code</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -47,6 +65,7 @@ const Estoque = () => {
                   <td>{item.quantidade}</td>
                   <td>{item.minimo}</td>
                   <td>{item.categoria}</td>
+                  <td>{item.qrCode && <img src={item.qrCode} alt="QR Code" className="w-12 h-12" />}</td>
                   <td>
                     <button
                       onClick={() => atualizarQuantidade(item.id, 10)}

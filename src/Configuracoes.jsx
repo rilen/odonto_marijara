@@ -1,3 +1,4 @@
+```
 import React, { useState } from 'react';
 
 const Configuracoes = () => {
@@ -96,3 +97,4 @@ const Configuracoes = () => {
 };
 
 export default Configuracoes;
+```

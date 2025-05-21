@@ -8,7 +8,7 @@ const usuariosRoutes = require('./routes/usuarios');
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: 'https://odonto-marijara.vercel.app' }));
 app.use(express.json());
 
 // Conectar ao MongoDB

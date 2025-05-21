@@ -1,0 +1,63 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Defining title and document structure
+\title{\textbf{Sistema Web para Consultório Odontológico - Documentação}}
+\author{Clínica Odontológica - Marijara}
+\date{20 de Maio de 2025}
+\maketitle
+
+\section{Visão Geral}
+Este documento descreve o sistema web desenvolvido para consultórios odontológicos, com módulos para gestão de pacientes, agendamentos, financeiro, estoque, relatórios, odontograma, notificações, dashboard, configurações, anamnese, treinamento, suporte e avaliação de pacientes. O sistema é construído com tecnologias modernas (React, Node.js, MongoDB) e suporta operação offline via PWA.
+
+\section{Requisitos Técnicos}
+\begin{itemize}
+    \item \textbf{Navegador}: Chrome, Firefox, ou Edge (versões recentes).
+    \item \textbf{Servidor Local}: Node.js (\texttt{npx serve}) ou Python (\texttt{http.server}).
+    \item \textbf{Hospedagem Recomendada}: AWS Elastic Beanstalk, MongoDB Atlas, Cloudinary.
+    \item \textbf{Dependências}: Incluídas via CDN (React, Chart.js, jsPDF, FullCalendar, QRCode.js, SignaturePad).
+\end{itemize}
+
+\section{Módulos do Sistema}
+\subsection{Acesso}
+\begin{itemize}
+    \item Gerenciamento de contas (admin, dentista, operador).
+    \item Autenticação com JWT, bloqueio após 5 tentativas de login.
+    \item Auditoria de logs para alterações críticas.
+\end{itemize}
+
+\subsection{Contatos}
+\begin{itemize}
+    \item Cadastro de pacientes, fornecedores, e dentistas.
+    \item Captura de fotos via webcam, histórico em planilha, odontograma vinculado.
+    \item Busca rápida por CPF ou nome.
+\end{itemize}
+
+\subsection{Agendamento}
+\begin{itemize}
+    \item Calendário interativo (FullCalendar) para consultas, raio-x, controles.
+    \item Filtros por dentista e status, lembretes automáticos via e-mail/WhatsApp.
+    \item Suporte a fusos horários configuráveis.
+\end{itemize}
+
+\subsection{Financeiro}
+\begin{itemize}
+    \item Gestão de contas a pagar/receber, emissão de boletos (PagSeguro).
+    \item Relatórios de faturamento, inadimplência, fluxo de caixa.
+    \item Integração com agendamentos.
+\end{itemize}
+
+\subsection{Esto

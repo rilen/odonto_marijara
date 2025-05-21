@@ -3,14 +3,15 @@ import jsPDF from 'jspdf';
 
 const Treinamento = () => {
   const [treinamentos, setTreinamentos] = useState([
-    { id: 1, modulo: 'Agendamento', tipo: 'Vídeo', progresso: 50, concluido: false },
-    { id: 2, modulo: 'Odontograma', tipo: 'PDF', progresso: 80, concluido: false },
+    { id: 1, modulo: 'Agendamento', tipo: 'Vídeo', progresso: 50, concluido: false, pontos: 0 },
+    { id: 2, modulo: 'Odontograma', tipo: 'PDF', progresso: 80, concluido: false, pontos: 0 },
   ]);
   const [quiz, setQuiz] = useState({ modulo: '', respostas: [] });
 
   const atualizarProgresso = (id, progresso) => {
+    const pontos = progresso === 100 ? 100 : Math.round(progresso * 0.5);
     setTreinamentos(treinamentos.map(t => 
-      t.id === id ? { ...t, progresso, concluido: progresso === 100 } : t
+      t.id === id ? { ...t, progresso, concluido: progresso === 100, pontos } : t
     ));
   };
 
@@ -19,6 +20,14 @@ const Treinamento = () => {
     doc.text(`Certificado de Conclusão - ${modulo}`, 10, 10);
     doc.text('Parabéns por concluir o treinamento!', 10, 20);
     doc.save(`certificado_${modulo}.pdf`);
+  };
+
+  const iniciarQuiz = () => {
+    if (!quiz.modulo) {
+      alert('Selecione um módulo para o quiz!');
+      return;
+    }
+    alert(`Iniciando quiz para ${quiz.modulo}`);
   };
 
   return (
@@ -33,6 +42,7 @@ const Treinamento = () => {
                 <th>Módulo</th>
                 <th>Tipo</th>
                 <th>Progresso</th>
+                <th>Pontos</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -42,6 +52,7 @@ const Treinamento = () => {
                   <td>{t.modulo}</td>
                   <td>{t.tipo}</td>
                   <td>{t.progresso}%</td>
+                  <td>{t.pontos}</td>
                   <td>
                     <button
                       onClick={() => atualizarProgresso(t.id, Math.min(t.progresso + 10, 100))}
@@ -75,6 +86,7 @@ const Treinamento = () => {
             <option value="Odontograma">Odontograma</option>
           </select>
           <button
+            onClick={iniciarQuiz}
             className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
           >
             Iniciar Quiz

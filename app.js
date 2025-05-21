@@ -1,26 +1,33 @@
-import React, { useState } from 'react';
-import Contatos from './contatos.js';
-import Agendamento from './agendamento.js';
-import Financeiro from './financeiro.js';
-import Estoque from './estoque.js';
-import Relatorios from './relatorios.js';
-import Odontograma from './odontograma.js';
-import Notificacoes from './notificacoes.js';
-import Dashboard from './dashboard.js';
-import Configuracoes from './configuracoes.js';
-import Anamnese from './anamnese.js';
-import Treinamento from './treinamento.js';
-import Suporte from './suporte.js';
-import Avaliacao from './avaliacao.js';
+import React, { useState, lazy, Suspense } from 'react';
+const Contatos = lazy(() => import('./contatos.js'));
+const Agendamento = lazy(() => import('./agendamento.js'));
+const Financeiro = lazy(() => import('./financeiro.js'));
+const Estoque = lazy(() => import('./estoque.js'));
+const Relatorios = lazy(() => import('./relatorios.js'));
+const Odontograma = lazy(() => import('./odontograma.js'));
+const Notificacoes = lazy(() => import('./notificacoes.js'));
+const Dashboard = lazy(() => import('./dashboard.js'));
+const Configuracoes = lazy(() => import('./configuracoes.js'));
+const Anamnese = lazy(() => import('./anamnese.js'));
+const Treinamento = lazy(() => import('./treinamento.js'));
+const Suporte = lazy(() => import('./suporte.js'));
+const Avaliacao = lazy(() => import('./avaliacao.js'));
 
 const App = () => {
   const [modulo, setModulo] = useState('Dashboard');
   const [user, setUser] = useState(null);
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [idioma, setIdioma] = useState('Português');
+
+  const traducoes = {
+    Português: { login: 'Entrar como Admin', falha: 'Simular Falha de Login', tentativas: 'Tentativas' },
+    Inglês: { login: 'Login as Admin', falha: 'Simulate Login Failure', tentativas: 'Attempts' },
+    Espanhol: { login: 'Iniciar sesión como Admin', falha: 'Simular fallo de inicio de sesión', tentativas: 'Intentos' },
+  };
 
   const login = (role) => {
     if (loginAttempts >= 5) {
-      alert('Conta bloqueada! Contate o suporte.');
+      alert(traducoes[idioma].tentativas + ': Conta bloqueada! Contate o suporte.');
       return;
     }
     setUser({ role });
@@ -30,26 +37,26 @@ const App = () => {
   const handleFailedLogin = () => {
     setLoginAttempts(loginAttempts + 1);
     if (loginAttempts + 1 >= 5) {
-      alert('Conta bloqueada após 5 tentativas! Notificação enviada.');
+      alert(traducoes[idioma].tentativas + ': Conta bloqueada após 5 tentativas! Notificação enviada.');
     }
   };
 
   const renderModulo = () => {
     switch (modulo) {
-      case 'Contatos': return <Contatos />;
-      case 'Agendamento': return <Agendamento />;
-      case 'Financeiro': return <Financeiro />;
-      case 'Estoque': return <Estoque />;
-      case 'Relatorios': return <Relatorios />;
-      case 'Odontograma': return <Odontograma />;
-      case 'Notificacoes': return <Notificacoes />;
-      case 'Dashboard': return <Dashboard />;
-      case 'Configuracoes': return <Configuracoes />;
-      case 'Anamnese': return <Anamnese />;
-      case 'Treinamento': return <Treinamento />;
-      case 'Suporte': return <Suporte />;
-      case 'Avaliacao': return <Avaliacao />;
-      default: return <Dashboard />;
+      case 'Contatos': return <Contatos idioma={idioma} />;
+      case 'Agendamento': return <Agendamento idioma={idioma} />;
+      case 'Financeiro': return <Financeiro idioma={idioma} />;
+      case 'Estoque': return <Estoque idioma={idioma} />;
+      case 'Relatorios': return <Relatorios idioma={idioma} />;
+      case 'Odontograma': return <Odontograma idioma={idioma} />;
+      case 'Notificacoes': return <Notificacoes idioma={idioma} />;
+      case 'Dashboard': return <Dashboard idioma={idioma} />;
+      case 'Configuracoes': return <Configuracoes idioma={idioma} setIdioma={setIdioma} />;
+      case 'Anamnese': return <Anamnese idioma={idioma} />;
+      case 'Treinamento': return <Treinamento idioma={idioma} />;
+      case 'Suporte': return <Suporte idioma={idioma} />;
+      case 'Avaliacao': return <Avaliacao idioma={idioma} />;
+      default: return <Dashboard idioma={idioma} />;
     }
   };
 
@@ -57,20 +64,20 @@ const App = () => {
     <div className="min-h-screen bg-gray-100">
       {!user ? (
         <div className="max-w-md mx-auto mt-8 p-4">
-          <h2 className="text-xl">Login</h2>
+          <h2 className="text-xl">{traducoes[idioma].login}</h2>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
             onClick={() => login('admin')}
           >
-            Entrar como Admin
+            {traducoes[idioma].login}
           </button>
           <button
             className="bg-red-500 text-white px-4 py-2 rounded mt-4 ml-2"
             onClick={handleFailedLogin}
           >
-            Simular Falha de Login
+            {traducoes[idioma].falha}
           </button>
-          {loginAttempts > 0 && <p>Tentativas: {loginAttempts}/5</p>}
+          {loginAttempts > 0 && <p>{traducoes[idioma].tentativas}: {loginAttempts}/5</p>}
         </div>
       ) : (
         <div>
@@ -78,12 +85,16 @@ const App = () => {
             <ul className="flex space-x-4 flex-wrap">
               {['Dashboard', 'Contatos', 'Agendamento', 'Financeiro', 'Estoque', 'Relatorios', 'Odontograma', 'Notificacoes', 'Configuracoes', 'Anamnese', 'Treinamento', 'Suporte', 'Avaliacao'].map(m => (
                 <li key={m}>
-                  <button onClick={() => setModulo(m)} className="hover:underline">{m}</button>
+                  <button onClick={() => setModulo(m)} className="hover:underline">
+                    {traducoes[idioma][m] || m}
+                  </button>
                 </li>
               ))}
             </ul>
           </nav>
-          {renderModulo()}
+          <Suspense fallback={<div>Carregando...</div>}>
+            {renderModulo()}
+          </Suspense>
         </div>
       )}
     </div>

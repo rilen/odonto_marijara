@@ -1,7 +1,8 @@
-// Example: ./routes/auth.js (converted to ES Modules)
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import User from '../models/User.js'; // Ensure .js extension for local imports
+// api/src/routes/auth.js
+
+import express from 'express'; // Usar import para express
+import bcrypt from 'bcryptjs'; // Usar import para bcryptjs
+import User from '../models/User.js'; // Usar import e .js para o modelo User
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
@@ -17,9 +18,10 @@ router.post('/login', async (req, res) => {
     }
     res.json({ id: user._id, email: user.email, role: user.role, modulos: user.modulos });
   } catch (err) {
+    console.error('Erro no servidor durante o login:', err);
     res.status(500).json({ message: 'Erro no servidor.' });
   }
 });
 
-// Export the router as a default export for ES Modules
+// Exportar o router como um export default para ES Modules
 export default router;

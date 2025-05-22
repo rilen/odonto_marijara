@@ -1,9 +1,14 @@
+// src/components/Anamnese.js
+
 import React, { useState, useRef, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import SignatureCanvas from 'react-signature-canvas';
+import { useParams } from 'react-router-dom'; // Importa useParams para pegar o ID da URL
 
 const Anamnese = () => {
-  // State for the anamnesis form fields
+  const { pacienteId } = useParams(); // Obtém o pacienteId da URL (ex: /anamnese/123)
+
+  // Estado para os campos do formulário de anamnese
   const [form, setForm] = useState({
     alergias: '',
     doencas: '',
@@ -11,116 +16,156 @@ const Anamnese = () => {
     assinatura: '',
   });
 
-  // State for managing patients
-  const [pacientes, setPacientes] = useState([]);
-  const [selectedPacienteId, setSelectedPacienteId] = useState(''); // Stores the ID of the selected patient
-  const [selectedPacienteDetails, setSelectedPacienteDetails] = useState(null); // Stores full details of the selected patient
+  // Estado para os detalhes do paciente selecionado
+  const [paciente, setPaciente] = useState(null); // Armazena os detalhes completos do paciente
+  const [loadingPaciente, setLoadingPaciente] = useState(true); // Estado de carregamento
+  const [error, setError] = useState(''); // Estado para mensagens de erro
 
-  // Ref for the signature canvas
+  // Referências para o canvas de assinatura
   const signatureRef = useRef(null);
 
-  // Error state for displaying messages to the user
-  const [error, setError] = useState('');
-
-  // Effect to fetch patient data when the component mounts
+  // Efeito para buscar os detalhes do paciente quando o componente é montado ou pacienteId muda
   useEffect(() => {
-    const fetchPacientes = async () => {
-      try {
-        // Fetch contacts from the API
-        const response = await fetch('/api/contatos');
-        const data = await response.json();
+    const fetchPacienteDetails = async () => {
+      if (pacienteId) {
+        setLoadingPaciente(true);
+        try {
+          // Busca os detalhes do paciente usando o ID da URL
+          const response = await fetch(`/api/contatos/${pacienteId}`);
+          const data = await response.json();
 
-        if (response.ok) {
-          // Filter contacts to only include those with 'Paciente' type
-          const pacientesData = data.filter(contact => contact.tipo === 'Paciente');
-          setPacientes(pacientesData);
-          setError(''); // Clear any previous errors
-        } else {
-          setError(data.message || 'Erro ao carregar pacientes.');
+          if (response.ok) {
+            setPaciente(data); // Define os detalhes do paciente
+            setError(''); // Limpa erros anteriores
+          } else {
+            setError(data.message || 'Erro ao carregar detalhes do paciente.');
+            setPaciente(null); // Limpa paciente se houver erro
+          }
+        } catch (err) {
+          setError('Erro ao conectar com o servidor para carregar detalhes do paciente.');
+          console.error('Erro ao carregar detalhes do paciente:', err);
+          setPaciente(null);
+        } finally {
+          setLoadingPaciente(false);
         }
-      } catch (err) {
-        setError('Erro ao conectar com o servidor para carregar pacientes.');
-        console.error('Erro ao carregar pacientes:', err);
+      } else {
+        setLoadingPaciente(false); // Não há pacienteId, então não está carregando
       }
     };
 
-    fetchPacientes();
-  }, []); // Empty dependency array means this effect runs once on mount
+    fetchPacienteDetails();
+  }, [pacienteId]); // O efeito é re-executado se o pacienteId na URL mudar
 
-  // Handler for form input changes
+  // Handler para mudanças nos campos de input do formulário
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Handler for patient selection dropdown change
-  const handlePacienteSelectChange = (e) => {
-    const id = e.target.value;
-    setSelectedPacienteId(id);
-    // Find the selected patient's full details from the 'pacientes' array
-    const paciente = pacientes.find(p => p.id === parseInt(id));
-    setSelectedPacienteDetails(paciente);
-  };
-
-  // Function to save the signature from the canvas
+  // Salvar a assinatura do canvas
   const salvarAssinatura = () => {
     if (signatureRef.current.isEmpty()) {
       setError('Por favor, forneça uma assinatura!');
       return;
     }
     setForm({ ...form, assinatura: signatureRef.current.toDataURL() });
-    setError(''); // Clear error on successful signature save
+    setError(''); // Limpa erro se a assinatura for salva com sucesso
   };
 
-  // Function to clear the signature canvas
+  // Limpar a assinatura do canvas
   const limparAssinatura = () => {
     signatureRef.current.clear();
     setForm({ ...form, assinatura: '' });
   };
 
-  // Function to export the form data as a PDF
+  // Exportar o formulário preenchido como PDF
   const exportarPDF = () => {
-    // Validate required fields and patient selection
-    if (!selectedPacienteId || !form.alergias || !form.doencas || !form.assinatura) {
-      setError('Por favor, selecione um paciente e preencha todos os campos obrigatórios e assine!');
+    // Validação dos campos obrigatórios e se um paciente foi carregado
+    if (!paciente || !form.alergias || !form.doencas || !form.assinatura) {
+      setError('Por favor, certifique-se de que um paciente foi carregado, preencha todos os campos obrigatórios e assine!');
       return;
     }
-    setError(''); // Clear error if validation passes
+    setError(''); // Limpa erro se a validação passar
 
     const doc = new jsPDF();
-    let yPos = 10; // Initial Y position for text
+    let yPos = 10; // Posição Y inicial para o texto
 
-    // Add patient details to the PDF
+    // Título do documento
+    doc.setFontSize(18);
     doc.text('Anamnese do Paciente', 10, yPos);
-    yPos += 10;
-    if (selectedPacienteDetails) {
-      doc.text(`Paciente: ${selectedPacienteDetails.nome}`, 10, yPos);
-      yPos += 7;
-      doc.text(`CPF: ${selectedPacienteDetails.cpf}`, 10, yPos);
-      yPos += 7;
-      doc.text(`Telefone: ${selectedPacienteDetails.telefone}`, 10, yPos);
-      yPos += 10;
-    }
+    yPos += 15;
 
-    // Add form details to the PDF
+    // Detalhes do Paciente
+    doc.setFontSize(12);
+    doc.text(`Nome do Paciente: ${paciente.nome}`, 10, yPos);
+    yPos += 7;
+    doc.text(`CPF: ${paciente.cpf}`, 10, yPos);
+    yPos += 7;
+    doc.text(`E-mail: ${paciente.email}`, 10, yPos);
+    yPos += 7;
+    doc.text(`Telefone: ${paciente.telefone}`, 10, yPos);
+    yPos += 7;
+    doc.text(`Endereço: ${paciente.endereco}`, 10, yPos);
+    yPos += 15;
+
+    // Campos da Anamnese
+    doc.setFontSize(14);
+    doc.text('Detalhes da Anamnese:', 10, yPos);
+    yPos += 10;
+    doc.setFontSize(12);
     doc.text(`Alergias: ${form.alergias}`, 10, yPos);
     yPos += 10;
-    doc.text(`Doenças: ${form.doencas}`, 10, yPos);
+    doc.text(`Doenças Crônicas/Histórico Médico: ${form.doencas}`, 10, yPos);
     yPos += 10;
-    doc.text(`Exames: ${form.exames || 'Nenhum'}`, 10, yPos);
-    yPos += 10;
+    doc.text(`Exames Anexados: ${form.exames || 'Nenhum'}`, 10, yPos);
+    yPos += 15;
 
-    // Add signature image if available
+    // Assinatura
+    doc.setFontSize(14);
+    doc.text('Assinatura do Paciente:', 10, yPos);
+    yPos += 5;
     if (form.assinatura) {
-      doc.addImage(form.assinatura, 'PNG', 10, yPos, 50, 30);
+      doc.addImage(form.assinatura, 'PNG', 10, yPos, 80, 40); // Ajuste o tamanho da imagem conforme necessário
     }
 
-    doc.save(`anamnese_${selectedPacienteDetails?.nome.replace(/\s/g, '_') || 'paciente'}.pdf`);
+    // Salva o PDF com o nome do paciente
+    doc.save(`anamnese_${paciente.nome.replace(/\s/g, '_')}.pdf`);
   };
+
+  // Exibe mensagem de carregamento enquanto busca os detalhes do paciente
+  if (loadingPaciente) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
+        <p className="text-gray-700 text-lg">Carregando detalhes do paciente...</p>
+      </div>
+    );
+  }
+
+  // Exibe mensagem se nenhum paciente for encontrado ou se não houver pacienteId na URL
+  if (!paciente && pacienteId) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
+        <p className="text-red-500 text-lg">Paciente não encontrado ou erro ao carregar. Verifique o ID.</p>
+      </div>
+    );
+  }
+
+  if (!pacienteId) {
+    return (
+        <div className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
+            <p className="text-gray-700 text-lg">Por favor, selecione um paciente na tela de Contatos para preencher a anamnese.</p>
+            <a href="/contatos" className="ml-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out">
+                Ir para Contatos
+            </a>
+        </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 font-sans">
       <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Anamnese do Paciente</h1>
 
+      {/* Exibição de mensagens de erro */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Erro: </strong>
@@ -129,35 +174,30 @@ const Anamnese = () => {
       )}
 
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Seleção do Paciente</h2>
-        <div className="mb-4">
-          <label htmlFor="paciente-select" className="block text-gray-700 text-sm font-bold mb-2">
-            Selecione o Paciente:
-          </label>
-          <select
-            id="paciente-select"
-            value={selectedPacienteId}
-            onChange={handlePacienteSelectChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-          >
-            <option value="">-- Selecione um paciente --</option>
-            {pacientes.map((paciente) => (
-              <option key={paciente.id} value={paciente.id}>
-                {paciente.nome} (CPF: {paciente.cpf})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {selectedPacienteDetails && (
-          <div className="bg-blue-50 p-4 rounded-md mb-6">
-            <h3 className="text-lg font-medium text-blue-800">Paciente Selecionado:</h3>
-            <p className="text-blue-700">Nome: {selectedPacienteDetails.nome}</p>
-            <p className="text-blue-700">CPF: {selectedPacienteDetails.cpf}</p>
-            <p className="text-blue-700">Telefone: {selectedPacienteDetails.telefone}</p>
+        {/* Detalhes do Paciente Carregado */}
+        {paciente && (
+          <div className="bg-blue-50 p-4 rounded-md mb-6 border border-blue-200">
+            <h2 className="text-xl font-semibold text-blue-800 mb-2">Paciente Selecionado:</h2>
+            <div className="flex items-center space-x-4">
+              {paciente.fotoUrl ? (
+                <img src={paciente.fotoUrl} alt="Foto do Paciente" className="w-20 h-20 rounded-full object-cover border-2 border-blue-300" />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-blue-200 flex items-center justify-center text-blue-500">
+                  <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+                </div>
+              )}
+              <div>
+                <p className="text-blue-700 text-lg font-medium">Nome: {paciente.nome}</p>
+                <p className="text-blue-700 text-sm">CPF: {paciente.cpf}</p>
+                <p className="text-blue-700 text-sm">E-mail: {paciente.email}</p>
+                <p className="text-blue-700 text-sm">Telefone: {paciente.telefone}</p>
+                <p className="text-blue-700 text-sm">Endereço: {paciente.endereco}</p>
+              </div>
+            </div>
           </div>
         )}
 
+        {/* Formulário de Saúde */}
         <h2 className="text-2xl font-semibold text-gray-700 mb-4 mt-6">Formulário de Saúde</h2>
         <div className="mb-4">
           <label htmlFor="alergias" className="block text-gray-700 text-sm font-bold mb-2">

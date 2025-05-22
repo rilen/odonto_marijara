@@ -30,10 +30,6 @@ app.use(express.json());
 
 // Conecta ao MongoDB
 mongoose.connect(process.env.MONGO_URI, {
-  // As opções useNewUrlParser e useUnifiedTopology são amplamente depreciadas
-  // em versões recentes do Mongoose e podem ser removidas.
-  // useNewUrlParser: true,
-  // useUnifiedTopology: true,
 })
 .then(() => {
   console.log('MongoDB conectado');

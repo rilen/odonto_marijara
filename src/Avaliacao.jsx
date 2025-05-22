@@ -1,4 +1,3 @@
-```
 import React, { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
 
@@ -121,4 +120,3 @@ const Avaliacao = () => {
 };
 
 export default Avaliacao;
-```

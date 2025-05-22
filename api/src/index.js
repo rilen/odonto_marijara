@@ -1,37 +1,37 @@
-// Import necessary modules using ES Modules syntax
+// api/src/index.js
+
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import path from 'path';
-import { fileURLToPath } from 'url'; // Helper for __dirname in ESM
+import { fileURLToPath } from 'url'; // Helper para __dirname em ESM
 
-// Import route modules (assuming they are also converted to ES Modules)
-import authRoutes from './routes/auth.js'; // Note: .js extension is often required for ESM
+// Importa as rotas da aplicação
+import authRoutes from './routes/auth.js';
 import usuariosRoutes from './routes/usuarios.js';
 import contatosRoutes from './routes/contatos.js';
+import financeiroRoutes from './routes/financeiro.js'; // NOVO: Importa as rotas financeiras
 
-// Load environment variables from .env file
+// Carrega variáveis de ambiente do arquivo .env
 dotenv.config();
 
 const app = express();
 
-// --- ESM equivalent of __dirname ---
-// fileURLToPath converts a file:// URL to a path string
-// import.meta.url gives the URL of the current module
+// --- Equivalente a __dirname em ES Modules ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// --- End ESM __dirname equivalent ---
+// --- Fim do equivalente a __dirname ---
 
-// Enable CORS for specified origin or a fallback
+// Configura o CORS para permitir requisições do frontend
 app.use(cors({ origin: process.env.CLIENT_URL || 'https://odonto-marijara.onrender.com' }));
-// Parse JSON request bodies
+// Habilita o Express a parsear corpos de requisição JSON
 app.use(express.json());
 
-// Connect to MongoDB
+// Conecta ao MongoDB
 mongoose.connect(process.env.MONGO_URI, {
-  // These options are largely deprecated in recent Mongoose versions,
-  // but included for compatibility if using an older version.
+  // As opções useNewUrlParser e useUnifiedTopology são amplamente depreciadas
+  // em versões recentes do Mongoose e podem ser removidas.
   // useNewUrlParser: true,
   // useUnifiedTopology: true,
 })
@@ -42,37 +42,33 @@ mongoose.connect(process.env.MONGO_URI, {
   console.error('Erro ao conectar MongoDB:', err.message);
 });
 
-// Middleware to check database connection status
+// Middleware para verificar a conexão com o banco de dados antes de processar rotas
 app.use((req, res, next) => {
-  // Mongoose connection states:
-  // 0 = disconnected
-  // 1 = connected
-  // 2 = connecting
-  // 3 = disconnecting
-  if (mongoose.connection.readyState !== 1) {
-    return res.status(500).json({ message: 'Banco de dados não conectado.' });
+  if (mongoose.connection.readyState !== 1) { // 1 significa conectado
+    return res.status(500).json({ message: 'Banco de dados não conectado. Por favor, tente novamente mais tarde.' });
   }
-  next(); // Proceed to the next middleware/route handler
+  next(); // Prossegue para a próxima middleware/rota
 });
 
-// Define API routes
+// Define as rotas da API
 app.use('/api/auth', authRoutes);
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/contatos', contatosRoutes);
+app.use('/api/financeiro', financeiroRoutes); // NOVO: Usa as rotas financeiras
 
-// Serve static files from the 'dist' directory (Vite build output)
-// path.join(__dirname, '../../dist') correctly resolves the path relative to this file
+// Serve arquivos estáticos do build do Vite (frontend)
+// path.join(__dirname, '../../dist') resolve o caminho para a pasta 'dist'
 app.use(express.static(path.join(__dirname, '../../dist')));
 
-// For any other GET request, serve the main index.html file
-// This is crucial for single-page applications (SPAs) to handle client-side routing
+// Para qualquer outra requisição GET não tratada pelas rotas da API,
+// serve o arquivo index.html do frontend. Isso é essencial para SPAs (Single Page Applications)
+// para que o roteamento do lado do cliente funcione corretamente.
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 
-// Define the port to listen on, using environment variable or default to 3000
+// Define a porta em que o servidor irá escutar (do ambiente ou padrão 3000)
 const PORT = process.env.PORT || 3000;
 
-// Start the server
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`)); // Corrected: using backticks for template literal
-
+// Inicia o servidor
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

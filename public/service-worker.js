@@ -1,4 +1,3 @@
-```
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open('odonto-cache-v3').then((cache) => {
@@ -34,4 +33,3 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
-```

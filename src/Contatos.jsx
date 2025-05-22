@@ -1,4 +1,3 @@
-```
        import React, { useState, useEffect } from 'react';
 
        const Contatos = () => {
@@ -193,4 +192,3 @@
        };
 
        export default Contatos;
-       ```

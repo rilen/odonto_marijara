@@ -1,6 +1,7 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const User = require('../models/User');
+// Example: ./routes/auth.js (converted to ES Modules)
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import User from '../models/User.js'; // Ensure .js extension for local imports
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
@@ -20,4 +21,5 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
+// Export the router as a default export for ES Modules
+export default router;

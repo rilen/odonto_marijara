@@ -1,5 +1,6 @@
-// Example: ./models/User.js (converted to ES Modules)
-import mongoose from 'mongoose'; // Use import for mongoose
+// api/src/models/User.js
+
+import mongoose from 'mongoose'; // Usar import para mongoose
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -8,6 +9,6 @@ const userSchema = new mongoose.Schema({
   modulos: [{ type: String }],
 });
 
-// Export the Mongoose model as a default export for ES Modules
+// Exportar o modelo Mongoose como um export default para ES Modules
 const User = mongoose.model('User', userSchema);
 export default User;

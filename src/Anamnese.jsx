@@ -1,4 +1,3 @@
-```
 import React, { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import SignatureCanvas from 'react-signature-canvas';
@@ -98,4 +97,3 @@ const Anamnese = () => {
 };
 
 export default Anamnese;
-```
